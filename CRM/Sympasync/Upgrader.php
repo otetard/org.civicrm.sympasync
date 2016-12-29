@@ -16,10 +16,16 @@ class CRM_Sympasync_Upgrader extends CRM_Sympasync_Upgrader_Base {
     $this->executeSql("
       CREATE VIEW sympa_subscribers AS
       SELECT g.id as group_id, e.email as email
-      FROM civicrm_group g
-      INNER JOIN civicrm_group_contact gc on gc.group_id = g.id
-      INNER JOIN civicrm_email e on gc.contact_id = e.contact_id
-      WHERE gc.status = 'Added' AND e.is_primary = 1 AND e.on_hold = 0;
+        FROM civicrm_group g
+        INNER JOIN civicrm_group_contact gc on gc.group_id = g.id
+        INNER JOIN civicrm_email e on gc.contact_id = e.contact_id
+        WHERE gc.status = 'Added' AND e.is_primary = 1 AND e.on_hold = 0
+      UNION
+        SELECT g.id as group_id, e.email as email
+        FROM civicrm_group g
+        INNER JOIN civicrm_group_contact_cache gc on gc.group_id = g.id
+        INNER JOIN civicrm_email e on gc.contact_id = e.contact_id
+        WHERE e.is_primary = 1 AND e.on_hold = 0;
     ");
 
     $privateToken = CRM_Utils_String::createRandom(32, CRM_Utils_String::ALPHANUMERIC);
@@ -52,13 +58,28 @@ class CRM_Sympasync_Upgrader extends CRM_Sympasync_Upgrader_Base {
    *
    * @return TRUE on success
    * @throws Exception
-   *
-  public function upgrade_4200() {
-    $this->ctx->log->info('Applying update 4200');
-    CRM_Core_DAO::executeQuery('UPDATE foo SET bar = "whiz"');
-    CRM_Core_DAO::executeQuery('DELETE FROM bang WHERE willy = wonka(2)');
+   */
+  public function upgrade_0001() {
+    $this->ctx->log->info('Applying update 0001');
+
+    $this->executeSql("DROP VIEW IF EXISTS sympa_subscribers");
+    $this->executeSql("
+      CREATE VIEW sympa_subscribers AS
+      SELECT g.id as group_id, e.email as email
+        FROM civicrm_group g
+        INNER JOIN civicrm_group_contact gc on gc.group_id = g.id
+        INNER JOIN civicrm_email e on gc.contact_id = e.contact_id
+        WHERE gc.status = 'Added' AND e.is_primary = 1 AND e.on_hold = 0
+      UNION
+        SELECT g.id as group_id, e.email as email
+        FROM civicrm_group g
+        INNER JOIN civicrm_group_contact_cache gc on gc.group_id = g.id
+        INNER JOIN civicrm_email e on gc.contact_id = e.contact_id
+        WHERE e.is_primary = 1 AND e.on_hold = 0;
+    ");
+
     return TRUE;
-  } // */
+  }
 
 
   /**
