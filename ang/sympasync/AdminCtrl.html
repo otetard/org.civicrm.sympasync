@@ -1,6 +1,6 @@
 <div class="crm-container">
   <div crm-ui-debug="sqlCred"></div>
-  <div crm-ui-debug="staticGroups"></div>
+  <div crm-ui-debug="groups"></div>
 
   <form name="sympaAdminForm" crm-ui-id-scope>
 
@@ -13,8 +13,8 @@
     <div class="crm-sympasync-admin-box">
       <select crm-ui-select="{allowClear:true}" ng-model="selected.groupId" style="width: 95%">
         <option value="">{{ts(' - select group -')}}</option>
-        <optgroup label="{{ts('Mailing Groups (Static)')}}">
-          <option ng-repeat="group in staticGroups" ng-value="group.id">{{group.title}}</option>
+        <optgroup label="{{ts('Mailing Groups')}}">
+          <option ng-repeat="group in groups" ng-value="group.id">{{group.title}}</option>
         </optgroup>
         <!-- TODO: Smart Mailing Groups -->
       </select>
